@@ -1,6 +1,7 @@
 class ArxivScraper:
   def __init__(self,tags=[],driver_path = 'chromedriver',all_pages = False,base_url = 'https://arxiv.org'):
     self.article_repository = []
+    self.relevant_indices = set()
     self.tags = tags
     self.all_pages = all_pages
     
@@ -86,6 +87,15 @@ class ArxivScraper:
         lean_tag_group.append(lean_tag)
       self.lean_tags.append(lean_tag_group)
     return self.lean_tags
+  
+  def filter_relevant_papers(self,relevant_lean_tags):
+    self.get_lean_tags()
+
+    for index,tags in enumerate(self.lean_tags):
+      for tag in tags:
+        if tag in relevant_lean_tags:
+          self.relevant_indices.add(index)
+    return self.relevant_indices
 
 if __name__ == '__main__':
   arxiv_search = ArxivScraper()
