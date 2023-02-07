@@ -8,77 +8,50 @@ class ArxivScraper:
     #setup selenium driver
     self.scraper = ScrapingHandler(base_url,driver_path = driver_path) 
 
-  def search_articles(self,query,repository = [], search_config = {'arxiv_url':'https://arxiv.org','size_button_xpath':"//select[@name='size']",
+  def search_articles(self,query,repository = [], search_config = {'arxiv_url':'https://export.arxiv.org/find','size_button_xpath':"//select[@name='size']",
                                                          'results_per_page':'200','go_button_xpath':'//*[@id="main-container"]/div[2]/div[1]/div/form/div[2]/div[3]/button'}):
     
-    ''' gets the query, and depending on the page, it creates '''
     self.article_repository = repository
 
     #print(search_config['arxiv_url'])
     self.scraper.reset_search()
     self.scraper.driver.get(search_config['arxiv_url'])
-    #self.scraper.save_screenshot('arminska.jpg')
     
-    #Find search bar, send in the query and press return
-    search_bar = self.scraper.driver.find_element('name','query')
-    #print(search_bar)
+    select_size = Select(self.scraper.driver.find_element('name','per_page'))
+    select_size.select_by_visible_text('100')
+    #time.sleep(1)
     
-    search_bar.send_keys(query)
-    search_bar.send_keys(Keys.RETURN)
-    
-    #wait for page to load(might need to be replaced with implicit wait)
-    time.sleep(1)
+    title_search = self.scraper.driver.find_element('name','query_2')
+    title_search.send_keys(query)
+    title_search.send_keys(Keys.RETURN)
+          
 
-    #Arxiv has various results per page options, by default we would like to use the most number available:
-    select_size = Select(self.scraper.driver.find_element('xpath',search_config['size_button_xpath']))
-    select_size.select_by_value(search_config['results_per_page'])
-    button = self.scraper.driver.find_element('xpath',search_config['go_button_xpath'])
-    button.click()
 
-  def get_paper_titles(self,find_config = {'class':'title is-5 mathjax'}):
+  def get_paper_titles(self,find_config = {'class':'list-title mathjax'}):
     ''' '''
     self.scraper.get_soup()
-    
-    titles_parent = self.scraper.soup.find_all('p',find_config)
-    
-    #The text for each title we take the text and clean it up with strip 
-    self.titles = [title.text.strip() for title in titles_parent]
+    titles = self.scraper.soup.find_all('div',find_config) 
+    self.titles = [title.text.strip()[7:] for title in titles]
     return self.titles
 
-  def get_paper_authors(self,find_config = {'class':'authors'}):  
+  def get_paper_authors(self,find_config = {'class':'list-authors'}):  
     #setup the author search
     self.scraper.get_soup()
-    self.author_names = []
-    authors_parent = self.scraper.soup.find_all('p',find_config)
-    
-    #the titles and the papers Note: This code is subject to change since the website could change at anytime.
-    for authors in authors_parent:
-      name_group = authors.find_all('a')
-      self.author_names = [name.text for name in name_group]
-      
-   
-    return self.author_names
+    authors = self.scraper.soup.find_all('div',find_config) 
+    self.authors = [author_group.text.strip[8:].replace('\n','').split(',') for author_group in authors]
+    return self.authors
 
   
-  def get_paper_tags(self,find_config = {'class':'tags is-inline-block'}):  
+  def get_paper_tags(self,find_config = {'class':'list-subjects'}):  
     self.scraper.get_soup()
+    tags = self.scraper.soup.find_all('div',find_config)
+    self.tags = [tag.text.strip()[9:].split(';') for tag in tags]
+    return self.tags
 
-    self.paper_tags = []
-    tag_parents = self.scraper.soup.find_all('div',{'class':'tags is-inline-block'})
-    
-    for i in tag_parents:
-      paper_tag = [j['data-tooltip'] for j in i.find_all('span')]
-      self.paper_tags.append(paper_tag)
-    return self.paper_tags
-
-  def get_paper_doi(self,find_config = {'class':'list-title is-inline-block'}):
-    
+  def get_paper_doi(self,find_config = {'class':'list-identifier'}):
     self.scraper.get_soup()
-    self.paper_doi = []
-
-    doi_parents = self.scraper.soup.find_all('p',find_config)
-    self.paper_doi = [doi.find('a')['href'] for doi in doi_parents]
-
+    doien = self.scraper.soup.find_all('span',find_config)
+    self.paper_doi = [doi.text[:-13] for doi in doien]
     return self.paper_doi
 
   def check_new_doi(self):
