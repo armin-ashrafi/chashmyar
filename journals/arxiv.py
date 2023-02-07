@@ -51,7 +51,7 @@ class ArxivScraper:
   def get_paper_doi(self,find_config = {'class':'list-identifier'}):
     self.scraper.get_soup()
     doien = self.scraper.soup.find_all('span',find_config)
-    self.paper_doi = [doi.text[:-13] for doi in doien]
+    self.paper_doi = [doi.text.split('[')[0] for doi in doien]
     return self.paper_doi
 
   def check_new_doi(self):
