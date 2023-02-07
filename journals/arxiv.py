@@ -85,7 +85,7 @@ class ArxivScraper:
         lean_tag = tag.split('(')[1][:-1]
         lean_tag_group.append(lean_tag)
       self.lean_tags.append(lean_tag_group)
-     return self.lean_tags
+    return self.lean_tags
 
 if __name__ == '__main__':
   arxiv_search = ArxivScraper()
