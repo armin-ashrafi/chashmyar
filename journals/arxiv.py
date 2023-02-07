@@ -92,4 +92,4 @@ if __name__ == '__main__':
   
   #Example search with incomplete repository
   arxiv_search.search_articles('retinoblastoma')
-  print(arxiv_search).get_paper_titles()
+  print(arxiv_search.get_paper_titles())
