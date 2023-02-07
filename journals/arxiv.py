@@ -8,8 +8,9 @@ class ArxivScraper:
     #setup selenium driver
     self.scraper = ScrapingHandler(base_url,driver_path = driver_path) 
 
-  def search_articles(self,query,repository = [], search_config = {'arxiv_url':'https://export.arxiv.org/find','size_button_xpath':"//select[@name='size']",
-                                                         'results_per_page':'200','go_button_xpath':'//*[@id="main-container"]/div[2]/div[1]/div/form/div[2]/div[3]/button'}):
+ 
+  def search_articles(self,query,repository = [], search_config = {'arxiv_url':'https://export.arxiv.org/find','size_button_name':"per_page",
+                                                         'results_per_page':'100','title_search_name':'query_2'}):
     
     self.article_repository = repository
 
@@ -17,11 +18,11 @@ class ArxivScraper:
     self.scraper.reset_search()
     self.scraper.driver.get(search_config['arxiv_url'])
     
-    select_size = Select(self.scraper.driver.find_element('name','per_page'))
-    select_size.select_by_visible_text('100')
+    select_size = Select(self.scraper.driver.find_element('name',search_config['size_button_name']))
+    select_size.select_by_visible_text(search_config['results_per_page'])
     #time.sleep(1)
     
-    title_search = self.scraper.driver.find_element('name','query_2')
+    title_search = self.scraper.driver.find_element('name',search_config['title_search_name'])
     title_search.send_keys(query)
     title_search.send_keys(Keys.RETURN)
           
