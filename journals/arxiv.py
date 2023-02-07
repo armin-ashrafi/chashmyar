@@ -96,6 +96,12 @@ class ArxivScraper:
         if tag in relevant_lean_tags:
           self.relevant_indices.add(index)
     return self.relevant_indices
+  
+  def get_relevant_titles(self,relevant_lean_tags):
+    self.get_paper_titles()
+    self.get_relevant_indices(relevant_lean_tags)
+
+    return [self.titles[index] for index in self.relevant_indices]
 
 if __name__ == '__main__':
   arxiv_search = ArxivScraper()
