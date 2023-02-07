@@ -74,27 +74,22 @@ class ArxivScraper:
     
     return False        
   
-  def check_new_article(self):
-    pass
+  def get_lean_tags(self):
+    '''Create a list of lean tags that are searchable'''
+    self.get_paper_tags()
+    
+    self.lean_tags = []
+    for tags in self.tags:
+      lean_tag_group = []
+      for tag in tags:
+        lean_tag = tag.split('(')[1][:-1]
+        lean_tag_group.append(lean_tag)
+      self.lean_tags.append(lean_tag_group)
+     return self.lean_tags
 
 if __name__ == '__main__':
   arxiv_search = ArxivScraper()
   
   #Example search with incomplete repository
-  arxiv_search.search_articles('retinoblastoma',repository = ['https://arxiv.org/abs/2103.07622',
- 'https://arxiv.org/abs/1911.00469',
- 'https://arxiv.org/abs/1809.09161',
- 'https://arxiv.org/abs/1809.09142',
- 'https://arxiv.org/abs/1809.09073',
- 'https://arxiv.org/abs/1407.4374',
- 'https://arxiv.org/abs/0812.0160',
- 'https://arxiv.org/abs/0809.2585',
- 'https://arxiv.org/abs/0711.4743',
- 'https://arxiv.org/abs/0711.0175',
- 'https://arxiv.org/abs/0707.4321',
- 'https://arxiv.org/abs/0707.4174',
- 'https://arxiv.org/abs/0706.1996'])
-  arxiv_search.check_new_doi()
-  print(arxiv_search.novel_dois)
-
-
+  arxiv_search.search_articles('retinoblastoma')
+  print(arxiv_search).get_paper_titles()
