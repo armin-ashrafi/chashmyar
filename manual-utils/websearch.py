@@ -1,5 +1,6 @@
 #Search Class 
-
+!pip install -U duckduckgo_search
+from duckduckgo_search import ddg
 #let's write a quick class
 from googlesearch import search as sch
 import pandas as pd
